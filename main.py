@@ -4,6 +4,7 @@ import replicate
 import time
 from pydantic import BaseModel
 import os
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.add_middleware(
@@ -19,14 +20,18 @@ def root():
 
 class VidRequest(BaseModel):
     input:str
+    api_key: Optional[str] = None
+
 
 @app.post('/generate')
 def vedio(req: VidRequest):
     inputp = req.input
     start = time.time()
+    
+    api_key = req.api_key if getattr(req, "api_key", None) else os.getenv("API_TOKEN")
 
     try:
-        client = replicate.Client(api_token=os.getenv('API_TOKEN'))
+        client = replicate.Client(api_token=api_key)
         output = client.run(
             "minimax/video-01",
             input={
@@ -45,7 +50,7 @@ def vedio(req: VidRequest):
 
     except Exception as e:
         print(f"Error generating video: {e}")
-        # Fallback mock vediovideo
+        # Fallback mock video
         fallback_url = "https://replicate.delivery/xezq/qqtm1akrG1bGBFAr7KqVaNuhU8SsoeZyTFrTgF2vJqxz5blKA/tmpxu_336z0.mp4"
         fallback_time = 0.0
         return {

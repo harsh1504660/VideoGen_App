@@ -140,6 +140,12 @@
 
     <h1>🎥 Text to Video Generator</h1>
 
+    <!-- API Key Input -->
+    <div class="input-container">
+        <input type="text" id="apiKey" placeholder="Optional: Enter your API Key" />
+    </div>
+
+    <!-- Prompt Input -->
     <div class="input-container">
         <input type="text" id="prompt" placeholder="Enter your video prompt..." />
         <button onclick="generateVideo()">Generate</button>
@@ -165,7 +171,7 @@
             <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter Logo"> Share on Twitter
         </a>
         <a id="linkedinShare" class="share-btn linkedin" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="LinkedIn Logo">Share on LinkedIn
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="LinkedIn Logo"> Share on LinkedIn
         </a>
     </div>
 
@@ -179,6 +185,7 @@
 
         async function generateVideo() {
             const prompt = document.getElementById("prompt").value;
+            const apiKey = document.getElementById("apiKey").value || null;
             const loadingDiv = document.getElementById("loading");
             const videoElement = document.getElementById("video");
             const timeDiv = document.getElementById("time");
@@ -201,7 +208,10 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ input: prompt })
+                    body: JSON.stringify({ 
+                        input: prompt,
+                        api_key: apiKey
+                    })
                 });
 
                 const data = await response.json();
