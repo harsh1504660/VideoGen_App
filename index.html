@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Video Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            margin: 20px auto;
+            max-width: 500px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            background-color: #4cafef;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #3a9cd9;
+        }
+
+        /* Demo prompt buttons */
+        .demo-prompts {
+            margin-top: 15px;
+        }
+
+        .demo-btn {
+            background-color: #1f6f8b;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px;
+            cursor: pointer;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .demo-btn:hover {
+            background-color: #145374;
+        }
+
+        /* Loading animation */
+        .loading {
+            margin: 40px auto;
+            width: 80px;
+            height: 80px;
+            border: 10px solid rgba(255, 255, 255, 0.2);
+            border-top: 10px solid #4cafef;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        video {
+            display: block;
+            margin: 20px auto;
+            max-width: 80%;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
+        }
+
+        .time {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        /* Share buttons container */
+        .share-container {
+            margin: 10px auto;
+            display: none;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .twitter {
+            background-color: #538baa;
+        }
+
+        .linkedin {
+            background-color: #538baa;
+        }
+
+        .share-btn img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .share-btn:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎥 Text to Video Generator</h1>
+
+    <div class="input-container">
+        <input type="text" id="prompt" placeholder="Enter your video prompt..." />
+        <button onclick="generateVideo()">Generate</button>
+    </div>
+
+    <!-- Predefined demo prompts -->
+    <div class="demo-prompts">
+        <div class="demo-btn" onclick="setPrompt('A golden retriever running across a sunny beach')">🐶 Dog on Beach</div>
+        <div class="demo-btn" onclick="setPrompt('A futuristic city skyline at night with flying cars')">🏙️ Futuristic City</div>
+        <div class="demo-btn" onclick="setPrompt('A chef preparing sushi in a traditional Japanese kitchen')">🍣 Sushi Chef</div>
+        <div class="demo-btn" onclick="setPrompt('A rocket launching into space with flames and smoke')">🚀 Rocket Launch</div>
+        <div class="demo-btn" onclick="setPrompt('A peaceful forest with sunlight streaming through the trees')">🌲 Peaceful Forest</div>
+    </div>
+
+    <div id="loading" style="display:none;">
+        <div class="loading"></div>
+        <p>Generating your video, please wait...</p>
+    </div>
+
+    <!-- Share buttons ABOVE video -->
+    <div class="share-container" id="shareContainer">
+        <a id="twitterShare" class="share-btn twitter" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter Logo"> Share on Twitter
+        </a>
+        <a id="linkedinShare" class="share-btn linkedin" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="LinkedIn Logo">Share on LinkedIn
+        </a>
+    </div>
+
+    <video id="video" controls style="display:none;"></video>
+    <div id="time" class="time"></div>
+
+    <script>
+        function setPrompt(text) {
+            document.getElementById("prompt").value = text;
+        }
+
+        async function generateVideo() {
+            const prompt = document.getElementById("prompt").value;
+            const loadingDiv = document.getElementById("loading");
+            const videoElement = document.getElementById("video");
+            const timeDiv = document.getElementById("time");
+            const shareContainer = document.getElementById("shareContainer");
+
+            if (!prompt.trim()) {
+                alert("Please enter a prompt");
+                return;
+            }
+
+            // Reset UI
+            videoElement.style.display = "none";
+            timeDiv.textContent = "";
+            shareContainer.style.display = "none";
+            loadingDiv.style.display = "block";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/mock", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ input: prompt })
+                });
+
+                const data = await response.json();
+                loadingDiv.style.display = "none";
+
+                if (data.url) {
+                    videoElement.src = data.url;
+                    videoElement.style.display = "block";
+
+                    const minutes = (data.time_taken / 60).toFixed(2);
+                    timeDiv.textContent = `⏳ Time taken: ${minutes} minutes`;
+
+                    // Save to localStorage
+                    localStorage.setItem("lastVideo", JSON.stringify(data));
+
+                    // Prepare share links
+                    const tweetText = encodeURIComponent(`Check out this AI-generated video! 🎥 Prompt: "${prompt}"`);
+                    document.getElementById("twitterShare").href = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(data.url)}`;
+                    document.getElementById("linkedinShare").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(data.url)}`;
+
+                    shareContainer.style.display = "flex";
+                } else {
+                    alert("Failed to generate video");
+                }
+
+            } catch (error) {
+                loadingDiv.style.display = "none";
+                alert("Error generating video: " + error.message);
+            }
+        }
+
+        // Load last video on refresh
+        window.onload = () => {
+            const saved = localStorage.getItem("lastVideo");
+            if (saved) {
+                const data = JSON.parse(saved);
+                const videoElement = document.getElementById("video");
+                const timeDiv = document.getElementById("time");
+                const shareContainer = document.getElementById("shareContainer");
+
+                videoElement.src = data.url;
+                videoElement.style.display = "block";
+                timeDiv.textContent = `⏳ Time taken: ${(data.time_taken / 60).toFixed(2)} minutes`;
+
+                document.getElementById("twitterShare").href = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check out this AI-generated video!")}&url=${encodeURIComponent(data.url)}`;
+                document.getElementById("linkedinShare").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(data.url)}`;
+
+                shareContainer.style.display = "flex";
+            }
+        };
+    </script>
+
+</body>
+</html>
