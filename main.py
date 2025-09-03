@@ -51,7 +51,7 @@ def vedio(req: VidRequest):
     except Exception as e:
         print(f"Error generating video: {e}")
         # Fallback mock video
-        fallback_url = "https://replicate.delivery/xezq/qqtm1akrG1bGBFAr7KqVaNuhU8SsoeZyTFrTgF2vJqxz5blKA/tmpxu_336z0.mp4"
+        fallback_url = "https://drive.google.com/file/d/14CCMcAwTK-UCDnSdWc8oya6uOlMXEOiL/view?usp=sharing"
         fallback_time = 0.0
         return {
             "url": fallback_url,
