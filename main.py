@@ -67,6 +67,7 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
                      "2. Or include your API key: `solar system key: abc123`\n")
         return Response(content=str(resp), media_type="application/xml")
     elif user_msg.lower() == '/about':
+        resp = MessagingResponse()
         resp.message(
             "🤖 *About AI Video Bot*\n\n"
             "I generate short AI-powered videos based on any topic you send me! 🎬\n\n"
@@ -77,6 +78,7 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
         )
         return Response(content=str(resp), media_type="application/xml")
     elif user_msg.lower() == '/example':
+        resp = MessagingResponse()
         resp.message(
             "📌 *Example Prompts:*\n\n"
             "1️⃣ `solar system`\n"
