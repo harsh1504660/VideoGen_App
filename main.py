@@ -121,11 +121,7 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
             )
     except Exception as e:
         print("Error:", e)
-        client.messages.create(
-            from_=TWILIO_WHATSAPP_NUMBER,
-            to=from_number,
-            body="⚠️ Oops! There was an error processing your request."
-        )
+        resp.message("⚠️ Something gone wrong please try again")
 
     return Response(content=str(resp), media_type="application/xml")
 if __name__ == "__main__":
