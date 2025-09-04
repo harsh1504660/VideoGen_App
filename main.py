@@ -59,48 +59,44 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
     """
 
     user_msg = Body.strip()
+    print("user msg:", user_msg)
     from_number = From
-    resp = MessagingResponse()
-    if user_msg.lower()=='/help':
-        resp.message("✅ Usage:\n\n"
-                     "1. Just type the topic: `solar system`\n"
-                     "2. Or include your API key: `solar system key: abc123`\n")
-        return Response(content=str(resp), media_type="application/xml")
-    elif user_msg.lower() == '/about':
-        resp = MessagingResponse()
+
+    resp = MessagingResponse()  # only once
+
+    clean_msg = user_msg.lower().strip()
+
+    # Command handling
+    if clean_msg == "/help":
         resp.message(
-            "🤖 *About AI Video Bot*\n\n"
-            "I generate short AI-powered videos based on any topic you send me! 🎬\n\n"
-            "✅ *How to use:*\n"
-            "1. Just type a topic → Example: `solar system`\n"
-            "2. Or include your API key → Example: `solar system key:abc123`\n\n"
-            "⚡️ I’ll reply with a video link once it’s ready!"
+            "✅ Usage:\n\n"
+            "1. Just type the topic: `solar system`\n"
+            "2. Or include your API key: `solar system key: abc123`\n"
         )
         return Response(content=str(resp), media_type="application/xml")
-    elif user_msg.lower() == '/example':
-        resp = MessagingResponse()
+    elif clean_msg == "/about":
         resp.message(
-            "📌 *Example Prompts:*\n\n"
-            "1️⃣ `solar system`\n"
-            "2️⃣ `history of the internet`\n"
-            "3️⃣ `black holes key:abc123`\n"
-            "4️⃣ `AI in healthcare`\n"
-            "5️⃣ `World War II overview`\n\n"
-            "👉 Just type one of these, or send your own topic!"
+            "🤖 *About AI Video Bot*\nI generate AI videos based on any topic you send! 🎬\n"
+            "Usage: `topic` or `topic key:YOUR_KEY`"
         )
         return Response(content=str(resp), media_type="application/xml")
-    # Step 1: Acknowledge message
+    elif clean_msg == "/example":
+        resp.message(
+            "📌 Example Prompts:\n1️⃣ solar system\n2️⃣ history of the internet\n3️⃣ AI in healthcare"
+        )
+        return Response(content=str(resp), media_type="application/xml")
+
+    # Extract topic and API key
     match = re.search(r"key\s*:\s*(\S+)", user_msg, re.IGNORECASE)
     api_key = match.group(1) if match else None
-    
     topic = re.sub(r"key\s*:\s*\S+", "", user_msg, flags=re.IGNORECASE).strip()
-    print(topic)
-    print(api_key)
+    print("topic:", topic, "api_key:", api_key)
+
     if not topic:
         resp.message("⚠️ Please provide a topic. Example: `solar system key: abc123`")
         return Response(content=str(resp), media_type="application/xml")
-    
-    resp = MessagingResponse()
+
+    # Step 1: Acknowledge
     resp.message("✅ Got it! Generating your AI video, please wait...")
     # Step 2: Call your video generation API
     try:
@@ -108,17 +104,15 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
         video_url = video_data.get("url")
     
         if video_url:
-            client.messages.create(
-                from_=TWILIO_WHATSAPP_NUMBER,
-                to=from_number,
-                body=f"🎬 Here’s your AI-generated video! :{video_url}",
-            )
+            resp.message(f"🎬 Here is your AI video: {video_url}")
+            # client.messages.create(
+            #     from_=TWILIO_WHATSAPP_NUMBER,
+            #     to=from_number,
+            #     body="🎬 Here’s your AI-generated video!",
+            #     media_url=[video_url]
+            # )
         else:
-            client.messages.create(
-                from_=TWILIO_WHATSAPP_NUMBER,
-                to=from_number,
-                body="❌ Sorry, something went wrong while generating your video."
-            )
+            resp.message("❌ Sorry, something went wrong while generating your video.")
     except Exception as e:
         print("Error:", e)
         resp.message("⚠️ Something gone wrong please try again")
