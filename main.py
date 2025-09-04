@@ -100,7 +100,7 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
     resp.message("✅ Got it! Generating your AI video, please wait...")
     # Step 2: Call your video generation API
     try:
-        video_data = generate_video(input_text=topic, api_key=api_key)
+        video_data = generate_video(input=topic, api_key=api_key)
         video_url = video_data.get("url")
     
         if video_url:
