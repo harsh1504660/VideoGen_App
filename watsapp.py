@@ -82,5 +82,6 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
 
 
 if __name__ == "__main__":
-    uvicorn.run("watsapp:app", host="0.0.0.0", port=8002, reload=True)
+    uvicorn.run("app", host="0.0.0.0", port=10001,)
+
 
