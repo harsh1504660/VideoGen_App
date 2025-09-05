@@ -113,14 +113,14 @@ async def whatsapp_webhook(
 
             if video_url:
                 client.messages.create(
-                    from_=f"whatsapp:{TWILIO_WHATSAPP_NUMBER}",
+                    from_=TWILIO_WHATSAPP_NUMBER",
                     to=from_number,
                     body="🎬 Here is your AI video:",
                     media_url=[video_url]
                 )
             else:
                 client.messages.create(
-                    from_=f"whatsapp:{TWILIO_WHATSAPP_NUMBER}",
+                    from_=TWILIO_WHATSAPP_NUMBER",
                     to=from_number,
                     body="❌ Sorry, something went wrong while generating your video."
                 )
