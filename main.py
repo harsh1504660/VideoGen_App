@@ -68,7 +68,7 @@ async def whatsapp_webhook(
     user_msg = Body.strip()
     print("user msg:", user_msg)
     from_number = From
-
+    print("twillio msg :", TWILIO_WHATSAPP_NUMBER)
     resp = MessagingResponse()
     clean_msg = user_msg.lower().strip()
 
