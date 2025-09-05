@@ -107,8 +107,8 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
             
             #resp.message(f"🎬 Here is your AI video: {video_url}")
             client.messages.create(
-                from_=TWILIO_WHATSAPP_NUMBER,
-                to=from_number,
+                from_="whatsapp:+14155238886",
+                to=whatsapp:+919405547015,
                 body="🎬 Here’s your AI-generated video!",
                 media_url=[video_url]
             )
