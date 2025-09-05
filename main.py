@@ -105,8 +105,9 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
     
         if video_url:
             
-            msg = resp.message("🎬 Here is your AI video:")
-            msg.media(video_url)
+           
+            resp.message("🎬 Here is your AI video:")
+            resp.message().media(video_url)
             
             # client.messages.create(
             #     from_="whatsapp:+14155238886",
