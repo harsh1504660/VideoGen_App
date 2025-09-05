@@ -105,7 +105,7 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
     
         if video_url:
             
-           
+            time.sleep(5)   
             resp.message("🎬 Here is your AI video:")
             resp.message().media(video_url)
             
