@@ -112,6 +112,7 @@ async def whatsapp_webhook(
             video_url = video_data.get("url")
 
             if video_url:
+                print("twillio msg :", TWILIO_WHATSAPP_NUMBER)
                 client.messages.create(
                     from_=TWILIO_WHATSAPP_NUMBER,
                     to=from_number,
@@ -127,7 +128,7 @@ async def whatsapp_webhook(
         except Exception as e:
             print("Error in background task:", e)
             client.messages.create(
-                from_=f"whatsapp:{TWILIO_WHATSAPP_NUMBER}",
+                from_=TWILIO_WHATSAPP_NUMBER,
                 to=from_number,
                 body="⚠️ Something went wrong, please try again."
             )
