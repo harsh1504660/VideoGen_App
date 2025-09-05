@@ -66,5 +66,3 @@ This ensures the user always receives some video output.
 ✔️ Fallback video when generation fails  
 ✔️ FastAPI + Twilio integration ready for deployment  
 - `<topic> key:<your_api_key>` → Generate a video using your **custom Replicate API key**.  
-
-Example:  
